@@ -9,6 +9,9 @@ const App = () => {
   const [password, setPassword] = useState("");
   const [user, setUser] = useState(null);
   const [errorMessage, setErrorMessage] = useState(null);
+  const [title, setTitle] = useState("");
+  const [author, setAuthor] = useState("");
+  const [url, setUrl] = useState("");
 
   useEffect(() => {
     blogService.getAll().then(blogs => setBlogs(blogs));
@@ -50,6 +53,46 @@ const App = () => {
     </div>
   );
 
+  const createBlogForm = () => (
+    <div>
+      <h2>create new</h2>
+      <form onSubmit={handleCreateBlog}>
+        <div>
+          <div>
+            title:
+            <input
+              type="title"
+              value={title}
+              name="Title"
+              onChange={({ target }) => setTitle(target.value)}
+            />
+          </div>
+          <div>
+            author:
+            <input
+              type="author"
+              value={author}
+              name="Author"
+              onChange={({ target }) => setAuthor(target.value)}
+            />
+          </div>
+          <div>
+            url:
+            <input
+              type="url"
+              value={url}
+              name="url"
+              onChange={({ target }) => setUrl(target.value)}
+            />
+          </div>
+          <div>
+            <button onClick={handleCreateBlog}>create</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  );
+
   const blogForm = () => (
     <div>
       {blogs.map(blog => (
@@ -86,6 +129,22 @@ const App = () => {
     setUser(null);
   };
 
+  const handleCreateBlog = async event => {
+    event.preventDefault();
+    try {
+      await blogService.create({ title, author, url });
+      setTitle("");
+      setAuthor("");
+      setUrl("");
+    } catch (exception) {
+      setErrorMessage("creation failed");
+      console.log(errorMessage);
+      setTimeout(() => {
+        setErrorMessage(null);
+      }, 5000);
+    }
+  };
+
   return (
     <div>
       {!user && loginForm()}
@@ -95,7 +154,7 @@ const App = () => {
           <p>
             {user.name} logged in<button onClick={handleLogout}>logout</button>
           </p>
-
+          {createBlogForm()}
           {blogForm()}
         </div>
       )}
