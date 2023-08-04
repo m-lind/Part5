@@ -2,16 +2,17 @@ import { useState, useEffect } from "react";
 import Blog from "./components/Blog";
 import blogService from "./services/blogs";
 import loginService from "./services/login";
+import Notification from "./components/Notification";
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [user, setUser] = useState(null);
-  const [errorMessage, setErrorMessage] = useState(null);
   const [title, setTitle] = useState("");
   const [author, setAuthor] = useState("");
   const [url, setUrl] = useState("");
+  const [info, setInfo] = useState("");
 
   useEffect(() => {
     blogService.getAll().then(blogs => setBlogs(blogs));
@@ -26,9 +27,18 @@ const App = () => {
     }
   }, []);
 
+  const notify = (message, type = "info") => {
+    setInfo({ message, type });
+
+    setTimeout(() => {
+      setInfo({ message: null, type: info.type });
+    }, 4000);
+  };
+
   const loginForm = () => (
     <div>
       <h2>Log in to application</h2>
+      {<Notification info={info} />}
       <form onSubmit={handleLogin}>
         <div>
           username
@@ -116,11 +126,9 @@ const App = () => {
       setUsername("");
       setPassword("");
     } catch (exception) {
-      setErrorMessage("wrong credentials");
-      console.log(errorMessage);
-      setTimeout(() => {
-        setErrorMessage(null);
-      }, 5000);
+      notify("wrong username or password", "error");
+      setUsername("");
+      setPassword("");
     }
   };
 
@@ -133,15 +141,15 @@ const App = () => {
     event.preventDefault();
     try {
       await blogService.create({ title, author, url });
+      notify(`a new blog ${title} by ${author} added`, "info");
       setTitle("");
       setAuthor("");
       setUrl("");
     } catch (exception) {
-      setErrorMessage("creation failed");
-      console.log(errorMessage);
-      setTimeout(() => {
-        setErrorMessage(null);
-      }, 5000);
+      notify(`creation failed`, "error");
+      setTitle("");
+      setAuthor("");
+      setUrl("");
     }
   };
 
@@ -151,6 +159,7 @@ const App = () => {
       {user && (
         <div>
           <h2>blogs</h2>
+          {<Notification info={info} />}
           <p>
             {user.name} logged in<button onClick={handleLogout}>logout</button>
           </p>
