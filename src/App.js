@@ -21,7 +21,7 @@ const App = () => {
 
   useEffect(() => {
     blogService.getAll().then(blogs => setBlogs(blogs));
-  }, []);
+  }, [blogs]);
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem("loggedBlogappUser");
@@ -110,12 +110,13 @@ const App = () => {
   const handleCreateBlog = async event => {
     event.preventDefault();
     try {
-      await blogService.create({ title, author, url });
-      notify(`a new blog ${title} by ${author} added`, "info");
+      const newBlog = await blogService.create({ title, author, url });
       setTitle("");
       setAuthor("");
       setUrl("");
       blogFormRef.current.toggleVisibility();
+      setBlogs([...blogs, newBlog]);
+      notify(`a new blog ${title} by ${author} added`, "info");
     } catch (exception) {
       notify(`creation failed`, "error");
       setTitle("");
