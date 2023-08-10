@@ -9,7 +9,9 @@ const setToken = newToken => {
 
 const getAll = () => {
   const request = axios.get(baseUrl);
-  return request.then(response => response.data);
+  const result = request.then(response => response.data);
+  //console.log(result);
+  return result;
 };
 
 const create = async newObject => {
