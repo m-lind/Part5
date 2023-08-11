@@ -1,7 +1,7 @@
 import { useState } from "react";
 import blogService from "./../services/blogs";
 
-const Blog = ({ blog, setBlogs }) => {
+const Blog = ({ blog, blogs, setBlogs, user }) => {
   const blogStyle = {
     paddingTop: 10,
     paddingLeft: 2,
@@ -35,6 +35,18 @@ const Blog = ({ blog, setBlogs }) => {
     }
   };
 
+  const handleRemove = async () => {
+    if (window.confirm(`Remove blog ${blog.title} by ${blog.author}`)) {
+      try {
+        await blogService.remove(blog);
+        setBlogs(blogs.filter(b => b.id !== blog.id));
+      } catch (error) {
+        console.log("Error removing blog", error);
+      }
+    }
+  };
+  console.log(blog.user);
+
   return (
     <div style={blogStyle}>
       <div>
@@ -54,6 +66,9 @@ const Blog = ({ blog, setBlogs }) => {
           </button>
         </div>
         <div>{blog.user.name}</div>
+        {blog.user.username === user.username && (
+          <button onClick={() => handleRemove()}>remove</button>
+        )}
       </div>
     </div>
   );
