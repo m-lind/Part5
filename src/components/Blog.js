@@ -45,7 +45,6 @@ const Blog = ({ blog, blogs, setBlogs, user }) => {
       }
     }
   };
-  console.log(blog.user);
 
   return (
     <div style={blogStyle}>
