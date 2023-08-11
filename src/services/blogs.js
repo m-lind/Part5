@@ -28,5 +28,14 @@ const addLike = async newObject => {
   return response.data;
 };
 
+const remove = async removeObject => {
+  const config = {
+    headers: { Authorization: token },
+  };
+
+  const response = await axios.delete(`${baseUrl}/${removeObject.id}`, config);
+  return response.data;
+};
+
 // eslint-disable-next-line import/no-anonymous-default-export
-export default { getAll, create, setToken, addLike };
+export default { getAll, create, setToken, addLike, remove };
