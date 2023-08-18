@@ -1,7 +1,7 @@
 import { useState } from "react";
 import blogService from "./../services/blogs";
 
-const Blog = ({ blog, blogs, setBlogs, user }) => {
+const Blog = ({ blog, blogs, setBlogs, user, toggleVisibility }) => {
   const blogStyle = {
     paddingTop: 10,
     paddingLeft: 2,
@@ -15,7 +15,8 @@ const Blog = ({ blog, blogs, setBlogs, user }) => {
 
   const buttonLabel = detailsVisible ? "hide" : "view";
 
-  const toggleVisibility = () => {
+  const handleToggleVisibility = () => {
+    toggleVisibility();
     setDetailsVisible(!detailsVisible);
   };
 
@@ -50,7 +51,7 @@ const Blog = ({ blog, blogs, setBlogs, user }) => {
     <div style={blogStyle}>
       <div>
         {blog.title} {blog.author}
-        <button onClick={() => toggleVisibility()}>{buttonLabel}</button>
+        <button onClick={() => handleToggleVisibility()}>{buttonLabel}</button>
       </div>
       <div style={showWhenVisible}>
         <div>{blog.url}</div>
