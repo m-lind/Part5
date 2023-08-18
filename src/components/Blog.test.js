@@ -24,7 +24,8 @@ test("renders title", () => {
   expect(element).toBeDefined();
 });
 
-test("url, number of likes and user is shown when view button is pressed", async () => {
+describe("url, number of likes and user is shown only after view button is pressed", () => {
+  let container;
   const blog = {
     title: "Test title",
     author: "Test author",
@@ -39,29 +40,31 @@ test("url, number of likes and user is shown when view button is pressed", async
   const setBlogs = () => {};
   const user = { username: "testusername" };
 
-  const mockHandler = jest.fn();
+  beforeEach(() => {
+    container = render(
+      <Blog blog={blog} blogs={blogs} setBlogs={setBlogs} user={user} />
+    ).container;
+  });
 
-  render(
-    <Blog
-      blog={blog}
-      blogs={blogs}
-      setBlogs={setBlogs}
-      user={user}
-      toggleVisibility={mockHandler}
-    />
-  );
+  test("at start the children are not displayed", () => {
+    const div = container.querySelector(".togglableContent");
+    expect(div).toHaveStyle("display: none");
+  });
 
-  const userSetup = userEvent.setup();
-  const button = screen.getByText("view");
-  await userSetup.click(button);
+  test("after clicking the button, children are displayed", async () => {
+    const userSetup = userEvent.setup();
+    const button = screen.getByText("view");
+    await userSetup.click(button);
 
-  expect(mockHandler.mock.calls).toHaveLength(1);
+    const div = container.querySelector(".togglableContent");
+    expect(div).not.toHaveStyle("display: none");
 
-  const urlElement = screen.getByText(blog.url);
-  const likesElement = screen.getByText(`likes ${blog.likes}`);
-  const userElement = screen.getByText(blog.user.name);
+    const urlElement = screen.getByText(blog.url);
+    const likesElement = screen.getByText(`likes ${blog.likes}`);
+    const userElement = screen.getByText(blog.user.name);
 
-  expect(urlElement).toBeInTheDocument();
-  expect(likesElement).toBeInTheDocument();
-  expect(userElement).toBeInTheDocument();
+    expect(urlElement).toBeDefined();
+    expect(likesElement).toBeDefined();
+    expect(userElement).toBeDefined();
+  });
 });
