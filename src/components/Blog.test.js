@@ -68,3 +68,20 @@ describe("url, number of likes and user is shown only after view button is press
     expect(userElement).toBeDefined();
   });
 });
+
+describe("When the like button is pressed twice, event handler is also called twice", () => {
+  let container;
+  const blog = {
+    title: "Test title",
+    author: "Test author",
+    url: "test.url",
+    likes: 5,
+    user: {
+      name: "Test user",
+      username: "testusername",
+    },
+  };
+  const blogs = [];
+  const setBlogs = () => {};
+  const user = { username: "testusername" };
+});
