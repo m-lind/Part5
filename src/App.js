@@ -75,15 +75,27 @@ const App = () => {
     </div>
   );
 
+  const updateBlogLikes = updatedBlog => {
+    setBlogs(prevBlogs =>
+      prevBlogs.map(prevBlog =>
+        prevBlog.id === updatedBlog.id ? updatedBlog : prevBlog
+      )
+    );
+  };
+
+  const removeBlog = blogId => {
+    setBlogs(blogs.filter(blog => blog.id !== blogId));
+  };
+
   const blogForm = () => (
     <div>
       {blogs.map(blog => (
         <Blog
           key={blog.id}
-          blogs={blogs}
           blog={blog}
-          setBlogs={setBlogs}
           user={user}
+          handleRemove={() => removeBlog(blog.id)}
+          handleLike={() => updateBlogLikes(blog)}
         />
       ))}
     </div>

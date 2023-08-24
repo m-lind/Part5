@@ -1,7 +1,6 @@
 import { useState } from "react";
 import blogService from "./../services/blogs";
-
-const Blog = ({ blog, blogs, setBlogs, user }) => {
+const Blog = ({ blog, user, handleRemove, handleLike }) => {
   const blogStyle = {
     paddingTop: 10,
     paddingLeft: 2,
@@ -19,27 +18,23 @@ const Blog = ({ blog, blogs, setBlogs, user }) => {
     setDetailsVisible(!detailsVisible);
   };
 
-  const handleLike = async () => {
+  const handleLikeClick = async () => {
     try {
       const updatedBlog = await blogService.addLike({
         ...blog,
         likes: blog.likes + 1,
       });
-      setBlogs(prevBlogs =>
-        prevBlogs.map(prevBlog =>
-          prevBlog.id === updatedBlog.id ? updatedBlog : prevBlog
-        )
-      );
+      handleLike(updatedBlog);
     } catch (error) {
       console.log("Error updating likes", error);
     }
   };
 
-  const handleRemove = async () => {
+  const handleRemoveClick = async () => {
     if (window.confirm(`Remove blog ${blog.title} by ${blog.author}`)) {
       try {
         await blogService.remove(blog);
-        setBlogs(blogs.filter(b => b.id !== blog.id));
+        handleRemove(blog.id);
       } catch (error) {
         console.log("Error removing blog", error);
       }
@@ -56,17 +51,11 @@ const Blog = ({ blog, blogs, setBlogs, user }) => {
         <div>{blog.url}</div>
         <div>
           likes {blog.likes}
-          <button
-            onClick={() => {
-              handleLike();
-            }}
-          >
-            like
-          </button>
+          <button onClick={handleLikeClick}>like</button>
         </div>
         <div>{blog.user.name}</div>
         {blog.user.username === user.username && (
-          <button onClick={() => handleRemove()}>remove</button>
+          <button onClick={handleRemoveClick}>remove</button>
         )}
       </div>
     </div>
