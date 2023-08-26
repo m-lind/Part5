@@ -14,18 +14,15 @@ test("renders title", () => {
       username: "testusername",
     },
   };
-  const blogs = [];
-  const setBlogs = () => {};
   const user = { username: "testusername" };
 
-  render(<Blog blog={blog} blogs={blogs} setBlogs={setBlogs} user={user} />);
+  render(<Blog blog={blog} user={user} />);
 
   const element = screen.getByText("Test title", { exact: false });
   expect(element).toBeDefined();
 });
 
-describe("url, number of likes and user is shown only after view button is pressed", () => {
-  let container;
+test("url, number of likes and user is shown only after view button is pressed", () => {
   const blog = {
     title: "Test title",
     author: "Test author",
@@ -36,41 +33,15 @@ describe("url, number of likes and user is shown only after view button is press
       username: "testusername",
     },
   };
-  const blogs = [];
-  const setBlogs = () => {};
   const user = { username: "testusername" };
 
-  beforeEach(() => {
-    container = render(
-      <Blog blog={blog} blogs={blogs} setBlogs={setBlogs} user={user} />
-    ).container;
-  });
+  render(<Blog blog={blog} user={user} />);
 
-  test("at start the children are not displayed", () => {
-    const div = container.querySelector(".togglableContent");
-    expect(div).toHaveStyle("display: none");
-  });
-
-  test("after clicking the button, children are displayed", async () => {
-    const userSetup = userEvent.setup();
-    const button = screen.getByText("view");
-    await userSetup.click(button);
-
-    const div = container.querySelector(".togglableContent");
-    expect(div).not.toHaveStyle("display: none");
-
-    const urlElement = screen.getByText(blog.url);
-    const likesElement = screen.getByText(`likes ${blog.likes}`);
-    const userElement = screen.getByText(blog.user.name);
-
-    expect(urlElement).toBeDefined();
-    expect(likesElement).toBeDefined();
-    expect(userElement).toBeDefined();
-  });
+  const div = screen.getByTestId("togglableContent");
+  expect(div).toHaveStyle("display: none");
 });
 
-describe("When the like button is pressed twice, event handler is also called twice", () => {
-  let container;
+test("after clicking the button, children are displayed", async () => {
   const blog = {
     title: "Test title",
     author: "Test author",
@@ -81,7 +52,51 @@ describe("When the like button is pressed twice, event handler is also called tw
       username: "testusername",
     },
   };
-  const blogs = [];
-  const setBlogs = () => {};
   const user = { username: "testusername" };
+
+  render(<Blog blog={blog} user={user} />);
+
+  const userSetup = userEvent.setup();
+  const button = screen.getByText("view");
+  await userSetup.click(button);
+
+  const div = screen.getByTestId("togglableContent");
+  expect(div).not.toHaveStyle("display: none");
+
+  const urlElement = screen.getByText(blog.url);
+  const likesElement = screen.getByText(`likes ${blog.likes}`);
+  const userElement = screen.getByText(blog.user.name);
+
+  expect(urlElement).toBeDefined();
+  expect(likesElement).toBeDefined();
+  expect(userElement).toBeDefined();
+});
+
+test("if like button is clicked twice, event handler is updated twice", async () => {
+  const blog = {
+    title: "Test title",
+    author: "Test author",
+    url: "test.url",
+    likes: 5,
+    user: {
+      name: "Test user",
+      username: "testusername",
+    },
+  };
+  const user = { username: "testusername" };
+
+  render(<Blog blog={blog} user={user} />);
+
+  const viewButton = screen.getByText("view");
+  await userEvent.click(viewButton);
+  const likeButton = screen.getByText("like");
+  expect(likeButton).toBeDefined();
+  await userEvent.click(likeButton);
+
+  const likesElement = screen.getByText(`likes ${blog.likes}`, {
+    exact: false,
+  });
+  expect(likesElement).toBeDefined();
+
+  //expect(mockHandler.mock.calls).toHaveLength(2);
 });

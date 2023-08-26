@@ -20,10 +20,16 @@ const App = () => {
   const blogFormRef = useRef();
 
   useEffect(() => {
-    blogService
-      .getAll()
-      .then(blogs => setBlogs(blogs.sort((a, b) => b.likes - a.likes)));
-  }, [blogs]);
+    const fetchBlogs = async () => {
+      try {
+        const blogs = await blogService.getAll();
+        setBlogs(blogs.sort((a, b) => b.likes - a.likes));
+      } catch (error) {
+        console.error("Error fetching blogs:", error);
+      }
+    };
+    fetchBlogs();
+  }, []);
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem("loggedBlogappUser");
@@ -75,14 +81,6 @@ const App = () => {
     </div>
   );
 
-  const updateBlogLikes = updatedBlog => {
-    setBlogs(prevBlogs =>
-      prevBlogs.map(prevBlog =>
-        prevBlog.id === updatedBlog.id ? updatedBlog : prevBlog
-      )
-    );
-  };
-
   const removeBlog = blogId => {
     setBlogs(blogs.filter(blog => blog.id !== blogId));
   };
@@ -94,12 +92,21 @@ const App = () => {
           key={blog.id}
           blog={blog}
           user={user}
-          handleRemove={() => removeBlog(blog.id)}
-          handleLike={() => updateBlogLikes(blog)}
+          handleRemove={removeBlog}
+          handleLike={updateBlogLikes}
         />
       ))}
     </div>
   );
+
+  const updateBlogLikes = updatedBlog => {
+    setBlogs(prevBlogs => {
+      const updatedBlogs = prevBlogs.map(prevBlog =>
+        prevBlog.id === updatedBlog.id ? updatedBlog : prevBlog
+      );
+      return updatedBlogs;
+    });
+  };
 
   const handleLogin = async event => {
     event.preventDefault();

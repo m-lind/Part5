@@ -20,11 +20,16 @@ const Blog = ({ blog, user, handleRemove, handleLike }) => {
 
   const handleLikeClick = async () => {
     try {
+      const { user, ...blogWithoutUser } = blog;
       const updatedBlog = await blogService.addLike({
-        ...blog,
+        ...blogWithoutUser,
         likes: blog.likes + 1,
       });
-      handleLike(updatedBlog);
+      const updatedBlogWithUser = {
+        ...updatedBlog,
+        user: blog.user,
+      };
+      handleLike(updatedBlogWithUser);
     } catch (error) {
       console.log("Error updating likes", error);
     }
@@ -47,7 +52,7 @@ const Blog = ({ blog, user, handleRemove, handleLike }) => {
         {blog.title} {blog.author}
         <button onClick={() => toggleVisibility()}>{buttonLabel}</button>
       </div>
-      <div style={showWhenVisible} className="togglableContent">
+      <div style={showWhenVisible} data-testid="togglableContent">
         <div>{blog.url}</div>
         <div>
           likes {blog.likes}
