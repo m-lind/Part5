@@ -81,8 +81,13 @@ const App = () => {
     </div>
   );
 
-  const removeBlog = blogId => {
-    setBlogs(blogs.filter(blog => blog.id !== blogId));
+  const removeBlog = async blog => {
+    try {
+      await blogService.remove(blog);
+      setBlogs(blogs.filter(b => b.id !== blog.id));
+    } catch (error) {
+      console.log("Error removing blog", error);
+    }
   };
 
   const blogForm = () => (
@@ -99,13 +104,28 @@ const App = () => {
     </div>
   );
 
-  const updateBlogLikes = updatedBlog => {
-    setBlogs(prevBlogs => {
-      const updatedBlogs = prevBlogs.map(prevBlog =>
-        prevBlog.id === updatedBlog.id ? updatedBlog : prevBlog
-      );
-      return updatedBlogs;
-    });
+  const updateBlogLikes = async blog => {
+    try {
+      const { user, ...blogWithoutUser } = blog;
+      const updatedBlog = await blogService.addLike({
+        ...blogWithoutUser,
+        likes: blog.likes + 1,
+      });
+      const updatedBlogWithUser = {
+        ...updatedBlog,
+        user: blog.user,
+      };
+      setBlogs(prevBlogs => {
+        const updatedBlogs = prevBlogs.map(prevBlog =>
+          prevBlog.id === updatedBlogWithUser.id
+            ? updatedBlogWithUser
+            : prevBlog
+        );
+        return updatedBlogs;
+      });
+    } catch (error) {
+      console.log("Error updating likes", error);
+    }
   };
 
   const handleLogin = async event => {
@@ -142,6 +162,7 @@ const App = () => {
       setAuthor("");
       setUrl("");
       blogFormRef.current.toggleVisibility();
+      newBlog.user = user;
       setBlogs([...blogs, newBlog]);
       notify(`a new blog ${title} by ${author} added`, "info");
     } catch (exception) {

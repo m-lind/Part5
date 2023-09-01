@@ -1,5 +1,5 @@
 import React from "react";
-import "@testing-library/jest-dom/extend-expect";
+import "@testing-library/jest-dom";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import Blog from "./Blog";
@@ -14,9 +14,8 @@ test("renders title", () => {
       username: "testusername",
     },
   };
-  const user = { username: "testusername" };
 
-  render(<Blog blog={blog} user={user} />);
+  render(<Blog blog={blog} user={blog.user} />);
 
   const element = screen.getByText("Test title", { exact: false });
   expect(element).toBeDefined();
@@ -33,9 +32,8 @@ test("url, number of likes and user is shown only after view button is pressed",
       username: "testusername",
     },
   };
-  const user = { username: "testusername" };
 
-  render(<Blog blog={blog} user={user} />);
+  render(<Blog blog={blog} user={blog.user} />);
 
   const div = screen.getByTestId("togglableContent");
   expect(div).toHaveStyle("display: none");
@@ -52,13 +50,11 @@ test("after clicking the button, children are displayed", async () => {
       username: "testusername",
     },
   };
-  const user = { username: "testusername" };
 
-  render(<Blog blog={blog} user={user} />);
+  render(<Blog blog={blog} user={blog.user} />);
 
-  const userSetup = userEvent.setup();
   const button = screen.getByText("view");
-  await userSetup.click(button);
+  await userEvent.click(button);
 
   const div = screen.getByTestId("togglableContent");
   expect(div).not.toHaveStyle("display: none");
@@ -83,20 +79,18 @@ test("if like button is clicked twice, event handler is updated twice", async ()
       username: "testusername",
     },
   };
-  const user = { username: "testusername" };
 
-  render(<Blog blog={blog} user={user} />);
+  const mockHandler = jest.fn();
+
+  render(<Blog blog={blog} user={blog.user} handleLike={mockHandler} />);
 
   const viewButton = screen.getByText("view");
   await userEvent.click(viewButton);
+
   const likeButton = screen.getByText("like");
-  expect(likeButton).toBeDefined();
+
+  await userEvent.click(likeButton);
   await userEvent.click(likeButton);
 
-  const likesElement = screen.getByText(`likes ${blog.likes}`, {
-    exact: false,
-  });
-  expect(likesElement).toBeDefined();
-
-  //expect(mockHandler.mock.calls).toHaveLength(2);
+  expect(mockHandler).toHaveBeenCalledTimes(2);
 });
