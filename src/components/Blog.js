@@ -1,5 +1,5 @@
 import { useState } from "react";
-import blogService from "./../services/blogs";
+
 const Blog = ({ blog, user, handleRemove, handleLike }) => {
   const blogStyle = {
     paddingTop: 10,
@@ -18,31 +18,13 @@ const Blog = ({ blog, user, handleRemove, handleLike }) => {
     setDetailsVisible(!detailsVisible);
   };
 
-  const handleLikeClick = async () => {
-    try {
-      const { user, ...blogWithoutUser } = blog;
-      const updatedBlog = await blogService.addLike({
-        ...blogWithoutUser,
-        likes: blog.likes + 1,
-      });
-      const updatedBlogWithUser = {
-        ...updatedBlog,
-        user: blog.user,
-      };
-      handleLike(updatedBlogWithUser);
-    } catch (error) {
-      console.log("Error updating likes", error);
-    }
+  const handleLikeClick = () => {
+    handleLike(blog);
   };
 
   const handleRemoveClick = async () => {
     if (window.confirm(`Remove blog ${blog.title} by ${blog.author}`)) {
-      try {
-        await blogService.remove(blog);
-        handleRemove(blog.id);
-      } catch (error) {
-        console.log("Error removing blog", error);
-      }
+      handleRemove(blog);
     }
   };
 
