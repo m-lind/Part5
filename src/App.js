@@ -12,9 +12,6 @@ const App = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [user, setUser] = useState(null);
-  const [title, setTitle] = useState("");
-  const [author, setAuthor] = useState("");
-  const [url, setUrl] = useState("");
   const [info, setInfo] = useState("");
 
   const blogFormRef = useRef();
@@ -68,15 +65,7 @@ const App = () => {
     <div>
       <h2>create new</h2>
       <Togglable buttonLabel="new blog" ref={blogFormRef}>
-        <BlogForm
-          onSubmit={handleCreateBlog}
-          title={title}
-          author={author}
-          url={url}
-          handleTitleChange={({ target }) => setTitle(target.value)}
-          handleAuthorChange={({ target }) => setAuthor(target.value)}
-          handleUrlChange={({ target }) => setUrl(target.value)}
-        />
+        <BlogForm createBlog={handleCreateBlog} />
       </Togglable>
     </div>
   );
@@ -154,22 +143,15 @@ const App = () => {
     setUser(null);
   };
 
-  const handleCreateBlog = async event => {
-    event.preventDefault();
+  const handleCreateBlog = async blogObject => {
     try {
-      const newBlog = await blogService.create({ title, author, url });
-      setTitle("");
-      setAuthor("");
-      setUrl("");
+      const newBlog = await blogService.create(blogObject);
       blogFormRef.current.toggleVisibility();
       newBlog.user = user;
       setBlogs([...blogs, newBlog]);
-      notify(`a new blog ${title} by ${author} added`, "info");
+      notify(`a new blog ${newBlog.title} by ${newBlog.author} added`, "info");
     } catch (exception) {
       notify(`creation failed`, "error");
-      setTitle("");
-      setAuthor("");
-      setUrl("");
     }
   };
 
