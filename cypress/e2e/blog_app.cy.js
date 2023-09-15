@@ -73,6 +73,12 @@ describe("Blog", function () {
         cy.get("@theParent").find("#like-button").click();
         cy.get("@theParent").contains("likes 1");
       });
+
+      it("the blog can be removed", function () {
+        cy.contains("Third test").contains("view").click();
+        cy.contains("Third test").parent().find("#remove-button").click();
+        cy.get("Third test").should("not.exist");
+      });
     });
   });
 });
