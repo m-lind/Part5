@@ -13,7 +13,11 @@ const Notification = ({ info }) => {
     marginBottom: 10,
   };
 
-  return <div style={style}>{info.message}</div>;
+  return (
+    <div className="error" style={style}>
+      {info.message}
+    </div>
+  );
 };
 
 export default Notification;
