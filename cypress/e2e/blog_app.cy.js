@@ -79,6 +79,24 @@ describe("Blog", function () {
         cy.contains("Third test").parent().find("#remove-button").click();
         cy.get("Third test").should("not.exist");
       });
+
+      it("the original creator can see the remove button but another user cannot", function () {
+        cy.contains("First test").contains("view").click();
+        cy.contains("First test").parent().find("#remove-button");
+        cy.get("#logout-button").click();
+        const user = {
+          name: "Tester Testing",
+          username: "ttesting",
+          password: "salainen",
+        };
+        cy.request("POST", `${Cypress.env("BACKEND")}/users`, user);
+        cy.login({ username: "ttesting", password: "salainen" });
+        cy.contains("First test").contains("view").click();
+        cy.contains("First test")
+          .parent()
+          .find("#remove-button")
+          .should("not.exist");
+      });
     });
   });
 });

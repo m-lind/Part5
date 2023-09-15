@@ -163,7 +163,10 @@ const App = () => {
           <h2>blogs</h2>
           {<Notification info={info} />}
           <p>
-            {user.name} logged in<button onClick={handleLogout}>logout</button>
+            {user.name} logged in
+            <button onClick={handleLogout} id="logout-button">
+              logout
+            </button>
           </p>
           {createBlogForm()}
           {blogForm()}
